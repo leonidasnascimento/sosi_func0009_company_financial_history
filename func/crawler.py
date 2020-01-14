@@ -80,7 +80,7 @@ class Crawler():
                     period = date(int(_date_aux[2]), int(_date_aux[1]), int(_date_aux[0])).isoformat()
                     
                     # getting the values
-                    value_row: Tag = page.find("span", text=re.compile(_description, re.IGNORECASE))
+                    value_row: Tag = page.find("span", text=re.compile("^{}$".format(_description), re.IGNORECASE))
                     if value_row is None:
                         continue
 
