@@ -18,6 +18,7 @@ from configuration_manager.reader import reader
 SETTINGS_FILE_PATH = pathlib.Path(
     __file__).parent.parent.__str__() + "//local.settings.json"
 
+
 def main(req: func.HttpRequest) -> func.HttpResponse:
     utc_timestamp = datetime.datetime.utcnow().replace(
         tzinfo=datetime.timezone.utc).isoformat()
@@ -27,7 +28,7 @@ def main(req: func.HttpRequest) -> func.HttpResponse:
         post_service_url: str = config_obj.get_value("post_service_url")
         url_cash_flow: str = config_obj.get_value("url_cash_flow")
         url_balance_sheet: str = config_obj.get_value("url_balance_sheet")
-        
+
         # Messages
         ERR_CODE_REQUIRED = "Stock code is required"
         ERR_STOCK_NOT_PROCESSED = "{} was not processed"
@@ -36,23 +37,26 @@ def main(req: func.HttpRequest) -> func.HttpResponse:
         if (not req) or len(req.params) == 0 or (not req.params.get("code")):
             logging.error(ERR_CODE_REQUIRED)
             return func.HttpResponse(body=json.dumps(StatusProcessing(False, ERR_CODE_REQUIRED).__dict__), status_code=204)
-            
+
         stock_code: str = str(req.params.get("code"))
 
-        crawler_obj: Crawler = Crawler(url_cash_flow, url_balance_sheet, utc_timestamp)
+        crawler_obj: Crawler = Crawler(
+            url_cash_flow, url_balance_sheet, utc_timestamp)
         company_data: FinancialHistory = crawler_obj.get_data(stock_code)
 
         if company_data:
-            json_obj = json.dumps(company_data.__dict__, default=lambda o: o.__dict__)
+            json_obj = json.dumps(
+                company_data.__dict__, default=lambda o: o.__dict__).encode('utf8')
 
-            # TODO: At the time, we're not caring about the microservice response here 
-            threading.Thread(target=post_data, args=(post_service_url, json_obj)).start()                
+            # TODO: At the time, we're not caring about the microservice response here
+            threading.Thread(target=post_data, args=(
+                post_service_url, json_obj)).start()
             logging.info("{} - OK".format(stock_code))
-                        
+
             return func.HttpResponse(body=json.dumps(StatusProcessing(True, SUCCESS_STOCK_PROCESSED.format(stock_code)).__dict__), status_code=200)
         else:
             logging.warn(ERR_STOCK_NOT_PROCESSED.format(stock_code))
-            return func.HttpResponse(body=json.dumps(StatusProcessing(False, ERR_STOCK_NOT_PROCESSED.format(stock_code)).__dict__), status_code=500)    
+            return func.HttpResponse(body=json.dumps(StatusProcessing(False, ERR_STOCK_NOT_PROCESSED.format(stock_code)).__dict__), status_code=500)
         pass
     except Exception as ex:
         error_log = '{} -> {}'.format(utc_timestamp, str(ex))
@@ -60,7 +64,8 @@ def main(req: func.HttpRequest) -> func.HttpResponse:
         return func.HttpResponse(body=json.dumps(StatusProcessing(False, error_log, ex).__dict__), status_code=500)
     pass
 
-def post_data(url, json):    
+
+def post_data(url, json):
     headers = {
         'content-type': "application/json",
         'cache-control': "no-cache",
