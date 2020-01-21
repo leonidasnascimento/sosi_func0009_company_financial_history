@@ -14,6 +14,7 @@ from bs4 import (BeautifulSoup, Tag)
 FIELD_SHARED_DIVIDENDS = "Dividendos Pagos"
 FIELD_NET_INCOME = "Lucro Líquido"
 FIELD_NET_WORTH = "Patrimônio Líquido Total"
+FIELD_TOTAL_DEBITS = "Total de Passivos"
 
 class Crawler():
     url_balance_sheet: str = ""
@@ -43,7 +44,8 @@ class Crawler():
         
         # Balance Sheet
         self.financial_history.balance_sheet.extend(self.__setHistoryDate(FIELD_NET_WORTH, _stock_code, self.url_balance_sheet, False))
-        
+        self.financial_history.balance_sheet.extend(self.__setHistoryDate(FIELD_TOTAL_DEBITS, _stock_code, self.url_balance_sheet, False))
+
         return self.financial_history
         
     def __setHistoryDate(self, _description: str, _stock_code: str, url: str, _turn_value_positive: bool):
