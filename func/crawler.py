@@ -42,8 +42,14 @@ class Crawler():
         cash_flow_rows: List[str] = [[FIELD_SHARED_DIVIDENDS, True], [FIELD_NET_INCOME, False]]
         balance_sheet_rows: List[str] = [[FIELD_NET_WORTH, False], [FIELD_TOTAL_DEBITS, False]]
 
-        self.financial_history.history.append(self.__get_history("Fluxo de Caixa", cash_flow_rows, _stock_code, self.url_cash_flow, True))
-        self.financial_history.history.append(self.__get_history("Balanço", balance_sheet_rows, _stock_code, self.url_balance_sheet, False))
+        cash_flow_hist_aux = self.__get_history("Fluxo de Caixa", cash_flow_rows, _stock_code, self.url_cash_flow, True)
+        balnace_hist_aux = self.__get_history("Balanço", balance_sheet_rows, _stock_code, self.url_balance_sheet, False)
+
+        if cash_flow_hist_aux:
+            self.financial_history.history.append(cash_flow_hist_aux)
+
+        if balnace_hist_aux:
+            self.financial_history.history.append(balnace_hist_aux)
         
         return self.financial_history
 
