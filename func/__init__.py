@@ -47,8 +47,8 @@ def main(req: func.HttpRequest) -> func.HttpResponse:
             json_obj = json.dumps(company_data.__dict__, default=lambda o: o.__dict__).encode('utf8')
 
             # TODO: At the time, we're not caring about the microservice response here
-            threading.Thread(target=post_data, args=(
-                post_service_url, json_obj)).start()
+            post_data(post_service_url, json_obj)
+            # threading.Thread(target=post_data, args=(post_service_url, json_obj)).start()
             logging.info("{} - OK".format(stock_code))
 
             return func.HttpResponse(body=json.dumps(StatusProcessing(True, SUCCESS_STOCK_PROCESSED.format(stock_code)).__dict__), status_code=200)
