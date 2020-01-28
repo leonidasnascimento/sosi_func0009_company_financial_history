@@ -43,7 +43,7 @@ def main(req: func.HttpRequest) -> func.HttpResponse:
         crawler_obj: Crawler = Crawler(url_cash_flow, url_balance_sheet, utc_timestamp)
         company_data: FinancialHistory = crawler_obj.get_data(stock_code)
 
-        if company_data:
+        if company_data and company_data.history:
             json_obj = json.dumps(company_data.__dict__, default=lambda o: o.__dict__).encode('utf8')
 
             # TODO: At the time, we're not caring about the microservice response here

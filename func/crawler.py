@@ -60,7 +60,7 @@ class Crawler():
         hist_aux.periods = []
 
         if not page:
-            return
+            return hist_aux
 
         period_index: int = -1
 
@@ -68,7 +68,7 @@ class Crawler():
         header_section: Tag = page.find("div", attrs={"class": "D(tbr) C($primaryColor)", "data-reactid": "32"})
 
         if header_section is None:
-            return
+            return hist_aux
 
         columns: List[Tag] = header_section.select("div > span")
         for column in columns:
