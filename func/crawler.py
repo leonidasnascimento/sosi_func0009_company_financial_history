@@ -69,6 +69,7 @@ class Crawler():
                 if page:
                     break
             except:
+                page = None
                 continue
                 
         if not page:
