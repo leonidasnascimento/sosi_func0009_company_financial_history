@@ -59,18 +59,10 @@ class Crawler():
         page: BeautifulSoup = None
         hist_aux: History = None
 
-        for proxy in self.proxies:
-            try:
-                res = requests.get(url.format(_stock_code), headers=self.request_headers, proxies={"http": proxy, "https": proxy})
-                page = BeautifulSoup(res.content)
-                hist_aux: History = History(_hist_description, "{0} - {1}".format(res.status_code, res.reason))                
-                hist_aux.periods = []
-
-                if page:
-                    break
-            except:
-                page = None
-                continue
+        res = requests.get(url.format(_stock_code), headers=self.request_headers)
+        page = BeautifulSoup(res.content)
+        hist_aux: History = History(_hist_description, "{0} - {1}".format(res.status_code, res.reason))                
+        hist_aux.periods = []
                 
         if not page:
             return History(_hist_description, "Target server refused the connection")
