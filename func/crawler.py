@@ -72,7 +72,7 @@ class Crawler():
                 continue
                 
         if not page:
-            return hist_aux
+            return History(_hist_description, "Target server refused the connection")
 
         period_index: int = -1
 
