@@ -24,10 +24,12 @@ class Period():
 class History():
     description: str = ''
     periods: List[Period] =[]
+    target_page_response: str = ''
 
-    def __init__(self, _desc: str):
+    def __init__(self, _desc: str, _target_page_resp: str):
         self.description = _desc
         self.periods = []
+        self.target_page_response = _target_page_resp
         pass
     pass
 

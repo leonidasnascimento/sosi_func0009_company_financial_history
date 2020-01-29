@@ -3,6 +3,7 @@ import time
 import threading
 import re
 import requests
+import traceback
 
 from typing import List
 from datetime import (date, datetime)
@@ -23,12 +24,12 @@ class Crawler():
     dt_processing: str = ""
     financial_history: FinancialHistory = None
     request_headers = {
-        'upgrade-insecure-requests': "1",
-        'user-agent': "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/77.0.3865.120 Safari/537.36",
+        'user-agent': "Mozilla/5.0 AppleWebKit/537.36 (KHTML, like Gecko; compatible; Googlebot/2.1; +http://www.google.com/bot.html) Chrome/W.X.Y.Z Safari/537.36",
         'accept': "text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,image/apng,*/*;q=0.8,application/signed-exchange;v=b3",
-        'cache-control': "no-cache",
-        'postman-token': "146ba02b-dc25-fb1a-9fbc-a8df1248db26"
+        'cache-control': "no-cache"
     }
+    
+    proxies = { '167.172.135.255:8080', '36.67.212.187:3128', '112.87.77.121:9999', '163.172.136.226:8811', '118.179.36.125:80', '5.160.131.12:53281', '187.11.216.80:8080', '36.37.160.224:23500', '80.240.115.254:36539', '195.239.115.106:44413', '178.128.18.102:8080', '134.209.181.49:8080', '35.175.175.5:8080', '171.35.160.197:9999', '109.200.156.102:8080', '91.135.148.198:59384', '114.134.190.230:37294', '223.199.18.131:9999', '157.245.123.27:8888', '110.36.229.164:8080', '138.121.91.139:8080', '213.6.149.138:41088', '170.82.73.140:53281', '138.201.5.34:8080', '83.56.10.201:8080', '45.222.97.210:8080', '64.227.14.30:8080', '221.229.252.98:9797', '117.88.176.171:3000', '62.240.53.101:8080', '78.188.186.180:8080', '206.189.38.237:8080', '165.227.248.222:3128', '45.4.85.152:999', '88.86.72.161:8080', '129.205.201.239:8080', '191.97.8.171:999', '171.5.26.19:8080', '43.255.228.150:3128', '101.108.251.78:8080', '165.22.50.208:8080', '223.199.31.13:9999', '144.202.105.190:80', '180.250.216.242:3128', '5.196.89.163:3128', '51.158.111.229:8811', '123.149.141.82:9999', '45.71.113.186:3128', '149.28.158.177:8000', '85.198.250.135:3128', '197.234.179.102:3128', '103.26.54.94:8080', '163.204.245.224:9999', '171.35.169.138:9999', '180.183.129.146:8080', '200.74.14.106:8080', '47.244.10.43:8080', '139.5.71.70:23500', '112.84.52.3:9999', '14.207.123.2:8080', '121.40.119.149:3128', '47.106.59.75:3128', '183.88.13.179:8080', '222.190.125.3:8118', '14.162.145.116:55055', '83.97.111.202:41258', '109.122.81.1:44556', '95.79.55.196:53281', '182.253.60.170:8083', '113.194.31.118:9999', '125.209.126.18:8080', '177.130.140.80:8080', '195.96.76.122:8080', '154.72.73.218:8080', '181.188.166.74:8080', '223.199.22.107:9999', '36.67.47.187:40440', '77.74.79.25:8080', '14.207.204.143:8080', '200.218.255.145:8080', '198.204.253.115:3128', '122.70.148.66:808', '157.245.124.217:3128', '103.74.120.78:3128', '94.28.57.100:8080', '36.67.24.109:37641', '89.32.227.230:8080', '74.85.157.198:8080', '88.135.40.74:8080', '125.209.73.170:3128', '203.76.124.35:8080', '68.183.186.232:8080', '182.76.169.195:3129', '223.204.67.65:8080', '165.16.29.171:8080', '49.67.190.251:9999', '64.227.14.32:8080', '36.91.129.18:8080', '142.93.72.206:3128', '36.27.28.221:9999', '114.226.35.254:9999', '169.239.223.136:49027', '51.75.127.193:3128', '51.158.99.51:8811' }
 
     def __init__(self, _url_cash_flow: str, _url_balance_sheet: str, _dt_processing: str):
         self.url_balance_sheet = _url_balance_sheet
@@ -54,11 +55,22 @@ class Crawler():
         return self.financial_history
 
     def __get_history(self, _hist_description: str, _rows: List[str], _stock_code: str, url: str, _turn_value_positive: bool) -> History:
-        res = requests.get(url.format(_stock_code), headers=self.request_headers)
-        page = BeautifulSoup(res.content)
-        hist_aux: History = History(_hist_description)
+        res: requests.Response = None
+        page: BeautifulSoup = None
+        hist_aux: History = None
         hist_aux.periods = []
 
+        for proxy in self.proxies:
+            try:
+                res = requests.get(url.format(_stock_code), headers=self.request_headers, proxies={"http": proxy, "https": proxy})
+                page = BeautifulSoup(res.content)
+                hist_aux: History = History(_hist_description, "{0} - {1}".format(res.status_code, res.reason))                
+
+                if page:
+                    break
+            except:
+                continue
+                
         if not page:
             return hist_aux
 
