@@ -80,7 +80,7 @@ class Crawler():
         header_section: Tag = page.find("div", attrs={"class": "D(tbr) C($primaryColor)", "data-reactid": "32"})
 
         if header_section is None:
-            return hist_aux
+            return History(_hist_description, "Section not found")
 
         columns: List[Tag] = header_section.select("div > span")
         for column in columns:
