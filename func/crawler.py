@@ -58,13 +58,13 @@ class Crawler():
         res: requests.Response = None
         page: BeautifulSoup = None
         hist_aux: History = None
-        hist_aux.periods = []
 
         for proxy in self.proxies:
             try:
                 res = requests.get(url.format(_stock_code), headers=self.request_headers, proxies={"http": proxy, "https": proxy})
                 page = BeautifulSoup(res.content)
                 hist_aux: History = History(_hist_description, "{0} - {1}".format(res.status_code, res.reason))                
+                hist_aux.periods = []
 
                 if page:
                     break
