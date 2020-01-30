@@ -40,7 +40,7 @@ def main(req: func.HttpRequest) -> func.HttpResponse:
 
         stock_code: str = str(req.params.get("code"))
 
-        crawler_obj: Crawler = Crawler(url_cash_flow, url_balance_sheet, utc_timestamp)
+        crawler_obj: Crawler = Crawler(url_cash_flow, url_balance_sheet, utc_timestamp, 5)
         company_data: FinancialHistory = crawler_obj.get_data(stock_code)
 
         if company_data and company_data.history:
