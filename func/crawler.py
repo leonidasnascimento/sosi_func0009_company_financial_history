@@ -44,14 +44,12 @@ class Crawler():
 
         # We're changing scraping order to fool target site crawler detection layer 
         if ((randint(0, 10) % 2) == 0):
-            time.sleep(self.default_sleep_time_sec)
             cash_flow_hist_aux = self.__get_history("Fluxo de Caixa", cash_flow_rows, _stock_code, self.url_cash_flow, True)
-            time.sleep(self.default_sleep_time_sec)
+            time.sleep(randint(0, self.default_sleep_time_sec))
             balnace_hist_aux = self.__get_history("Balanço", balance_sheet_rows, _stock_code, self.url_balance_sheet, False)
         else:
-            time.sleep(self.default_sleep_time_sec)
             balnace_hist_aux = self.__get_history("Balanço", balance_sheet_rows, _stock_code, self.url_balance_sheet, False)
-            time.sleep(self.default_sleep_time_sec)
+            time.sleep(randint(0, self.default_sleep_time_sec))
             cash_flow_hist_aux = self.__get_history("Fluxo de Caixa", cash_flow_rows, _stock_code, self.url_cash_flow, True)
 
         if cash_flow_hist_aux:
